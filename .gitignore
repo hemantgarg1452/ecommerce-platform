@@ -4,6 +4,7 @@ target/
 # IntelliJ
 .idea/
 *.iml
+.env
 
 # Logs
 *.log
