@@ -1,0 +1,20 @@
+package com.company.ecommerce.auth.entity;
+
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Data;
+
+@Entity
+@Table(name = "roles")
+@Data
+@Builder
+public class Role {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String name;
+
+}
