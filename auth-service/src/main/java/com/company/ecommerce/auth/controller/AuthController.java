@@ -1,15 +1,13 @@
 package com.company.ecommerce.auth.controller;
 
+import com.company.ecommerce.auth.dto.AuthResponse;
 import com.company.ecommerce.auth.dto.LoginRequest;
 import com.company.ecommerce.auth.dto.RegisterRequest;
 import com.company.ecommerce.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,8 +22,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request){
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request){
         authService.login(request);
-        return ResponseEntity.ok("Login successful");
+        return ResponseEntity.ok(authService.login(request));
+    }
+
+    @GetMapping("/protected")
+    public ResponseEntity<String> protectedEndPoint(){
+        return ResponseEntity.ok("You accessed protected endpoint");
     }
 }
