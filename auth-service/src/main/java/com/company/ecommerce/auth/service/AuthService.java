@@ -1,11 +1,14 @@
 package com.company.ecommerce.auth.service;
 
+import com.company.ecommerce.auth.dto.LoginRequest;
 import com.company.ecommerce.auth.dto.RegisterRequest;
 import com.company.ecommerce.auth.entity.Role;
 import com.company.ecommerce.auth.entity.User;
 import com.company.ecommerce.auth.repository.RoleRepository;
 import com.company.ecommerce.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     public void register(RegisterRequest request){
         if(userRepository.existsByEmail(request.getEmail())){
@@ -36,5 +40,14 @@ public class AuthService {
                 .enabled(true)
                 .build();
         userRepository.save(user);
+    }
+
+    public void login(LoginRequest request){
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
     }
 }
