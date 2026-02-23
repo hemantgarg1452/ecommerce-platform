@@ -1,14 +1,18 @@
 package com.company.ecommerce.auth.service;
 
+import com.company.ecommerce.auth.dto.AuthResponse;
 import com.company.ecommerce.auth.dto.LoginRequest;
 import com.company.ecommerce.auth.dto.RegisterRequest;
 import com.company.ecommerce.auth.entity.Role;
 import com.company.ecommerce.auth.entity.User;
 import com.company.ecommerce.auth.repository.RoleRepository;
 import com.company.ecommerce.auth.repository.UserRepository;
+import com.company.ecommerce.auth.security.CustomUserDetails;
+import com.company.ecommerce.auth.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +26,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     public void register(RegisterRequest request){
         if(userRepository.existsByEmail(request.getEmail())){
@@ -42,12 +47,21 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public void login(LoginRequest request){
-        authenticationManager.authenticate(
+    public AuthResponse login(LoginRequest request){
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        String accessToken = jwtService.generateAccessToken(userDetails);
+
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .build();
     }
 }
