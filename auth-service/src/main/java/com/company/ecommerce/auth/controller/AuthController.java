@@ -2,6 +2,7 @@ package com.company.ecommerce.auth.controller;
 
 import com.company.ecommerce.auth.dto.AuthResponse;
 import com.company.ecommerce.auth.dto.LoginRequest;
+import com.company.ecommerce.auth.dto.RefreshTokenRequest;
 import com.company.ecommerce.auth.dto.RegisterRequest;
 import com.company.ecommerce.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -30,5 +31,12 @@ public class AuthController {
     @GetMapping("/protected")
     public ResponseEntity<String> protectedEndPoint(){
         return ResponseEntity.ok("You accessed protected endpoint");
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(
+            @Valid @RequestBody RefreshTokenRequest request
+            ){
+        return ResponseEntity.ok(authService.refreshToken(request));
     }
 }
