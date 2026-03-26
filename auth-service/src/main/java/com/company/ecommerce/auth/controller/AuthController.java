@@ -1,9 +1,6 @@
 package com.company.ecommerce.auth.controller;
 
-import com.company.ecommerce.auth.dto.AuthResponse;
-import com.company.ecommerce.auth.dto.LoginRequest;
-import com.company.ecommerce.auth.dto.RefreshTokenRequest;
-import com.company.ecommerce.auth.dto.RegisterRequest;
+import com.company.ecommerce.auth.dto.*;
 import com.company.ecommerce.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +35,12 @@ public class AuthController {
             @Valid @RequestBody RefreshTokenRequest request
             ){
         return ResponseEntity.ok(authService.refreshToken(request));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(
+            @Valid @RequestBody LogoutRequest request){
+        authService.logout(request);
+        return ResponseEntity.ok("Logged out successfully");
     }
 }
