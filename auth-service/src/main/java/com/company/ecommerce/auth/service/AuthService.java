@@ -1,9 +1,6 @@
 package com.company.ecommerce.auth.service;
 
-import com.company.ecommerce.auth.dto.AuthResponse;
-import com.company.ecommerce.auth.dto.LoginRequest;
-import com.company.ecommerce.auth.dto.RefreshTokenRequest;
-import com.company.ecommerce.auth.dto.RegisterRequest;
+import com.company.ecommerce.auth.dto.*;
 import com.company.ecommerce.auth.entity.RefreshToken;
 import com.company.ecommerce.auth.entity.Role;
 import com.company.ecommerce.auth.entity.User;
@@ -116,5 +113,14 @@ public class AuthService {
                 .accessToken(newAccessToken)
                 .refreshToken(request.getRefreshToken())
                 .build();
+    }
+
+    public void logout(LogoutRequest request){
+        RefreshToken refreshToken = refreshTokenRepository
+                .findByToken(request.getRefreshToken())
+                .orElseThrow(()->new RuntimeException("Invalid refresh token"));
+        refreshToken.setRevoked(true);
+
+        refreshTokenRepository.save(refreshToken);
     }
 }
