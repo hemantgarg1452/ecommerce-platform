@@ -4,6 +4,8 @@ import com.company.ecommerce.auth.dto.*;
 import com.company.ecommerce.auth.entity.RefreshToken;
 import com.company.ecommerce.auth.entity.Role;
 import com.company.ecommerce.auth.entity.User;
+import com.company.ecommerce.auth.exception.BadRequestException;
+import com.company.ecommerce.auth.exception.ResourceNotFoundException;
 import com.company.ecommerce.auth.repository.RefreshTokenRepository;
 import com.company.ecommerce.auth.repository.RoleRepository;
 import com.company.ecommerce.auth.repository.UserRepository;
@@ -41,7 +43,7 @@ public class AuthService {
         }
 
         Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(()->new RuntimeException("Role not found"));
+                .orElseThrow(()->new ResourceNotFoundException("Role not found"));
 
         User user = User.builder()
                 .email(request.getEmail())
@@ -78,7 +80,7 @@ public class AuthService {
         String token = UUID.randomUUID().toString();
 
         User user = userRepository.findById(userId)
-                .orElseThrow(()->new RuntimeException("User not found"));
+                .orElseThrow(()->new ResourceNotFoundException("User not found"));
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(token)
@@ -95,14 +97,14 @@ public class AuthService {
     public AuthResponse refreshToken(RefreshTokenRequest request){
         RefreshToken refreshToken = refreshTokenRepository
                 .findByToken(request.getRefreshToken())
-                .orElseThrow(()->new RuntimeException("Invalid refresh token"));
+                .orElseThrow(()->new BadRequestException("Invalid refresh token"));
 
         if(refreshToken.isRevoked()){
-            throw new RuntimeException("Refresh token revoked");
+            throw new BadRequestException("Refresh token revoked");
         }
 
         if(refreshToken.getExpiryDate().isBefore(LocalDateTime.now())){
-            throw new RuntimeException("Refresh token expired");
+            throw new BadRequestException("Refresh token expired");
         }
 
         User user = refreshToken.getUser();
@@ -118,7 +120,7 @@ public class AuthService {
     public void logout(LogoutRequest request){
         RefreshToken refreshToken = refreshTokenRepository
                 .findByToken(request.getRefreshToken())
-                .orElseThrow(()->new RuntimeException("Invalid refresh token"));
+                .orElseThrow(()->new ResourceNotFoundException("Invalid refresh token"));
         refreshToken.setRevoked(true);
 
         refreshTokenRepository.save(refreshToken);
