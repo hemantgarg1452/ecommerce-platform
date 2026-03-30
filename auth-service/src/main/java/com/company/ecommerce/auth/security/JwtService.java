@@ -27,7 +27,8 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateAccessToken(CustomUserDetails userDetails){
+    public String
+    generateAccessToken(CustomUserDetails userDetails){
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .claim("userId", userDetails.getUserId())
